@@ -1,6 +1,6 @@
 # 📄 TLDR - PDF & Document Summarisation Agent
 
-An intelligent, interactive document summarisation agent built with **Google ADK (Agent Development Kit)** and powered by **Gemini 2.5 Flash**. 
+An intelligent, interactive document summarisation agent built with **Google ADK (Agent Development Kit)** and powered by **Gemini Flash**. 
 
 TLDR doesn't just generate generic summaries; it validates your files and adapts its language, tone, and depth to match your target audience (e.g., business executives, primary school children, or software engineers).
 
@@ -22,21 +22,21 @@ Below is the execution flow and logic of the TLDR agent:
 graph TD
     Start([User starts interaction]) --> Upload{Did User Upload a File?}
     
-    Upload -- Yes --> AutoSave[auto_save_uploaded_files Callback<br/>Intercepts inline data & saves to Artifact Service]
-    Upload -- No --> CheckState[Agent calls validate_files Tool]
+    Upload -- Yes --> AutoSave["auto_save_uploaded_files Callback"]
+    Upload -- No --> CheckState["Agent calls validate_files Tool"]
     
     AutoSave --> CheckState
     
     CheckState --> ValidFile{Valid Document Found?}
     
-    ValidFile -- No / Invalid --> PromptUpload[Agent asks User to upload a valid PDF/Text file] --> Start
-    ValidFile -- Yes --> AskAudience[Agent asks: "Who is the target audience?"<br/>Provides examples]
+    ValidFile -- No --> PromptUpload["Agent asks User to upload a valid PDF/Text file"] --> Start
+    ValidFile -- Yes --> AskAudience["Agent asks: 'Who is the target audience?'"]
     
-    AskAudience --> GetAudience[User specifies target audience]
+    AskAudience --> GetAudience["User specifies target audience"]
     
-    GetAudience --> LoadDoc[Agent calls load_artifacts Tool<br/>Loads file content into context]
+    GetAudience --> LoadDoc["Agent calls load_artifacts Tool"]
     
-    LoadDoc --> Summarise[Agent generates summary adapted to tone/depth of target audience]
+    LoadDoc --> Summarise["Agent generates summary adapted to tone/depth"]
     
     Summarise --> End([Summary Delivered])
     
