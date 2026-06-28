@@ -20,28 +20,27 @@ Below is the execution flow and logic of the TLDR agent:
 
 ```mermaid
 graph TD
-    Start([User starts interaction]) --> Upload{Did User Upload a File?}
+    UserMsg([User sends a message]) --> Upload{Does message contain a file?}
     
-    Upload -- Yes --> AutoSave["auto_save_uploaded_files Callback"]
+    Upload -- Yes --> AutoSave["auto_save_uploaded_files Callback<br/>Saves file to Artifact Service"]
     Upload -- No --> CheckState["Agent calls validate_files Tool"]
     
     AutoSave --> CheckState
     
-    CheckState --> ValidFile{Valid Document Found?}
+    CheckState --> ValidFile{Valid Document in Service?}
     
-    ValidFile -- No --> PromptUpload["Agent asks User to upload a valid PDF/Text file"] --> Start
-    ValidFile -- Yes --> AskAudience["Agent asks: 'Who is the target audience?'"]
+    ValidFile -- No --> PromptUpload["Agent asks User to upload a valid PDF/Text file"] --> Wait["Wait for next User message"]
     
-    AskAudience --> GetAudience["User specifies target audience"]
+    ValidFile -- Yes --> CheckAudience{Audience specified by User?}
     
-    GetAudience --> LoadDoc["Agent calls load_artifacts Tool"]
+    CheckAudience -- No --> AskAudience["Agent asks: 'Who is the target audience?'<br/>Provides examples"] --> Wait
     
-    LoadDoc --> Summarise["Agent generates summary adapted to tone/depth"]
+    CheckAudience -- Yes --> LoadDoc["Agent calls load_artifacts Tool<br/>Loads file content into context"]
     
-    Summarise --> End([Summary Delivered])
+    LoadDoc --> Summarise["Agent generates summary adapted to tone/depth of target audience"] --> End([Summary Delivered])
     
-    End --> NewFile{User uploads new file?}
-    NewFile -- Yes --> Start
+    Wait --> UserMsg
+    End --> Wait
 ```
 
 ---
@@ -77,7 +76,7 @@ Make sure you have the following installed on your local machine:
      # Windows (PowerShell)
      irm https://astral.sh/uv/install.ps1 | iex
      ```
-3. **Google Cloud SDK (gcloud)**
+3. (Optional, for those who want to deploy to Google Cloud) **Google Cloud SDK (gcloud)**
    - Follow the [Google Cloud SDK installation guide](https://cloud.google.com/sdk/docs/install).
 
 ---
